@@ -1,0 +1,926 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>360 Dual Oracle & Thoth Prompt Engine</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600&family=Raleway:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0d0a08;
+    --bone: #f0ead8;
+    --red: #8b1a1a;
+    --gold: #b8933a;
+    --smoke: #c8bfad;
+    --deep: #1a1209;
+    --mid: #3a2d1a;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background-color: var(--deep);
+    color: var(--bone);
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.7;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+  }
+
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  header {
+    text-align: center;
+    padding: 56px 0 40px;
+    border-bottom: 1px solid rgba(184,147,58,0.3);
+    margin-bottom: 48px;
+  }
+
+  .brand-line {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 5px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    opacity: 0.85;
+  }
+
+  h1 {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(26px, 5vw, 40px);
+    font-weight: 600;
+    color: var(--bone);
+    letter-spacing: 2px;
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 300;
+    color: var(--smoke);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  .ornament {
+    color: var(--gold);
+    font-size: 20px;
+    margin: 18px 0 0;
+    opacity: 0.7;
+    letter-spacing: 12px;
+  }
+
+  .section {
+    margin-bottom: 36px;
+  }
+
+  .section-label {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  @media (max-width: 600px) {
+    .form-grid { grid-template-columns: 1fr; }
+  }
+
+  input[type="text"],
+  input[type="date"],
+  input[type="time"],
+  select,
+  textarea {
+    width: 100%;
+    background: rgba(240,234,216,0.05);
+    border: 1px solid rgba(184,147,58,0.25);
+    border-radius: 2px;
+    color: var(--bone);
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 17px;
+    padding: 12px 16px;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  input[type="text"]:focus,
+  input[type="date"]:focus,
+  input[type="time"]:focus,
+  select:focus,
+  textarea:focus {
+    border-color: rgba(184,147,58,0.6);
+    background: rgba(240,234,216,0.08);
+  }
+
+  input::placeholder, textarea::placeholder {
+    color: rgba(200,191,173,0.4);
+    font-style: italic;
+  }
+
+  select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23b8933a' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 40px;
+  }
+
+  select option {
+    background: #1a1209;
+    color: var(--bone);
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 100px;
+  }
+
+  .draw-area {
+    background: rgba(240,234,216,0.03);
+    border: 1px solid rgba(184,147,58,0.2);
+    border-radius: 4px;
+    padding: 24px;
+    margin-bottom: 28px;
+  }
+
+  .draw-instructions {
+    font-style: italic;
+    color: var(--smoke);
+    font-size: 15px;
+    margin-bottom: 20px;
+  }
+
+  .spread-positions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .position-slot {
+    flex: 1;
+    min-width: 155px;
+    background: rgba(240,234,216,0.04);
+    border: 1px dashed rgba(184,147,58,0.2);
+    border-radius: 3px;
+    padding: 14px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .position-slot:hover {
+    border-color: rgba(184,147,58,0.5);
+    background: rgba(240,234,216,0.07);
+  }
+
+  .position-slot.filled {
+    border-style: solid;
+    border-color: rgba(184,147,58,0.4);
+    background: rgba(184,147,58,0.07);
+  }
+
+  .position-slot.oracle-slot {
+    border-color: rgba(184,147,58,0.4);
+    background: rgba(184,147,58,0.03);
+  }
+
+  .position-name {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .card-name-display {
+    font-size: 14px;
+    color: var(--bone);
+    font-style: italic;
+    line-height: 1.3;
+  }
+
+  .card-placeholder {
+    font-size: 13px;
+    color: rgba(200,191,173,0.35);
+    font-style: italic;
+  }
+
+  .badge {
+    font-size: 10px;
+    letter-spacing: 1px;
+    display: block;
+    margin-top: 4px;
+    text-transform: uppercase;
+  }
+  .reversed-badge { color: var(--red); }
+  .oracle-badge { color: var(--gold); font-family: 'Cinzel', serif; font-size: 8px; }
+
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(10,8,4,0.92);
+    z-index: 100;
+    overflow-y: auto;
+    padding: 32px 16px;
+  }
+
+  .modal-overlay.open { display: flex; align-items: flex-start; justify-content: center; }
+
+  .modal {
+    background: #1c1409;
+    border: 1px solid rgba(184,147,58,0.3);
+    border-radius: 4px;
+    padding: 32px;
+    width: 100%;
+    max-width: 660px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 16px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  .modal-sub {
+    font-size: 13px;
+    color: var(--smoke);
+    font-style: italic;
+    margin-bottom: 20px;
+  }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .card-btn {
+    background: rgba(240,234,216,0.04);
+    border: 1px solid rgba(184,147,58,0.15);
+    border-radius: 2px;
+    color: var(--bone);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px;
+    padding: 9px 10px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s;
+    line-height: 1.3;
+  }
+
+  .card-btn:hover {
+    border-color: rgba(184,147,58,0.5);
+    background: rgba(184,147,58,0.1);
+  }
+
+  .card-suite {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin: 16px 0 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid rgba(184,147,58,0.15);
+  }
+
+  .reversed-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 16px 0;
+    font-size: 14px;
+    color: var(--smoke);
+    cursor: pointer;
+  }
+
+  .toggle-box {
+    width: 18px;
+    height: 18px;
+    border: 1px solid rgba(184,147,58,0.4);
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--red);
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+
+  .btn {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 14px 28px;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-primary { background: var(--red); color: var(--bone); }
+  .btn-primary:hover { background: #a01f1f; }
+  .btn-secondary { background: transparent; color: var(--smoke); border: 1px solid rgba(200,191,173,0.25); }
+  .btn-secondary:hover { border-color: rgba(200,191,173,0.5); color: var(--bone); }
+  .btn-gold { background: rgba(184,147,58,0.15); color: var(--gold); border: 1px solid rgba(184,147,58,0.4); }
+  .btn-gold:hover { background: rgba(184,147,58,0.25); }
+  .btn-sm { font-size: 10px; padding: 10px 18px; letter-spacing: 2px; }
+
+  .generate-wrap { text-align: center; padding: 12px 0 24px; }
+  .generate-wrap .btn { font-size: 12px; padding: 16px 44px; letter-spacing: 4px; }
+
+  #reading-output { display: none; }
+  .reading-container { margin-top: 48px; border-top: 1px solid rgba(184,147,58,0.3); padding-top: 48px; }
+  .reading-header { text-align: center; margin-bottom: 44px; }
+
+  .prompt-box-area {
+    background: rgba(240,234,216,0.04);
+    border: 1px solid var(--gold);
+    border-radius: 4px;
+    padding: 24px;
+    margin-bottom: 24px;
+    font-family: monospace;
+    font-size: 14px;
+    color: #ddd5c0;
+    white-space: pre-wrap;
+    text-align: left;
+    max-height: 350px;
+    overflow-y: auto;
+  }
+
+  .type-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 24px; }
+  .type-tab {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 9px 16px;
+    border: 1px solid rgba(184,147,58,0.2);
+    border-radius: 2px;
+    cursor: pointer;
+    color: var(--smoke);
+    background: transparent;
+    transition: all 0.15s;
+  }
+  .type-tab:hover { border-color: rgba(184,147,58,0.5); color: var(--bone); }
+  .type-tab.active { border-color: var(--gold); color: var(--gold); background: rgba(184,147,58,0.1); }
+
+  .new-reading-wrap {
+    text-align: center;
+    margin-top: 48px;
+    padding-top: 36px;
+    border-top: 1px solid rgba(184,147,58,0.15);
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="brand-line">360TrendConnection</div>
+    <h1>Thoth & African Goddess<br>Prompt Matrix</h1>
+    <div class="subtitle">Hermetic Kabbalah · Inner Temples · Shadow Work</div>
+    <div class="ornament">✦ ✦ ✦</div>
+  </header>
+
+  <div id="reading-form">
+    <div class="section">
+      <span class="section-label">Reading Alignment Focus</span>
+      <div class="type-tabs">
+        <button class="type-tab active" data-type="general" onclick="selectType(this)">General</button>
+        <button class="type-tab" data-type="relational" onclick="selectType(this)">Relational / Mirroring</button>
+        <button class="type-tab" data-type="ancestral" onclick="selectType(this)">Ancestral Descent</button>
+        <button class="type-tab" data-type="sovereignty" onclick="selectType(this)">Sovereignty / Purpose</button>
+        <button class="type-tab" data-type="shadow" onclick="selectType(this)">Shadow Excavation</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <span class="section-label">Querent Parameters</span>
+      <div class="form-grid">
+        <input type="text" id="querent-name" placeholder="Name or Alias (optional)" />
+        <input type="date" id="birth-date" />
+        <input type="time" id="birth-time" />
+        <input type="text" id="birth-place" placeholder="Birth City/Country" />
+      </div>
+    </div>
+
+    <div class="section" id="partner-section" style="display:none;">
+      <span class="section-label">Second Matrix Person (Relational Mirroring)</span>
+      <div class="form-grid">
+        <input type="text" id="partner-name" placeholder="Their Name/Alias (optional)" />
+        <input type="date" id="partner-birth" />
+        <input type="text" id="partner-place" placeholder="Their Birth City" />
+      </div>
+    </div>
+
+    <div class="section">
+      <span class="section-label">The Core Inquiry (What is at Stake?)</span>
+      <textarea id="question" placeholder="Articulate what is truly seeking revelation. Be clear about the underlying patterns or blockages you are encountering." rows="4"></textarea>
+    </div>
+
+    <div class="section">
+      <span class="section-label">Tarot Layout Architecture</span>
+      <select id="spread-select" onchange="buildSpread()">
+        <option value="3card">Three Card (Past · Present · Future)</option>
+        <option value="celtic">Celtic Cross (10 Cards)</option>
+        <option value="5element">Five Elements (Root/Earth · Water · Fire · Air · Spirit)</option>
+        <option value="relationship">Relational Mirror (6 Cards)</option>
+        <option value="shadow">Shadow & Light Structural Array (4 Cards)</option>
+        <option value="single">Single Core Strategic Pull</option>
+      </select>
+    </div>
+
+    <div class="draw-area">
+      <p class="draw-instructions">Tap a slot below to map your drawn Thoth Cards and African Goddess Oracle placements.</p>
+      
+      <span class="section-label" style="font-size:10px; margin-bottom:8px; opacity:0.7;">Thoth Tarot Array Placements</span>
+      <div class="spread-positions" id="spread-positions" style="margin-bottom:28px;"></div>
+      
+      <span class="section-label" id="oracle-section-label" style="font-size:10px; margin-bottom:8px; opacity:0.7;">African Goddess Core Energy Anchor</span>
+      <div class="spread-positions" id="oracle-positions"></div>
+      
+      <button class="btn btn-gold btn-sm" style="margin-top:12px;" onclick="randomizeAll()">Randomize Full Synthesis Array</button>
+    </div>
+
+    <div class="section">
+      <span class="section-label">Additional Life Context or Friction Points (Optional)</span>
+      <textarea id="context" placeholder="Add details on active circumstances, physical symptoms, specific relationship blocks, or unresolved tracking points." rows="3"></textarea>
+    </div>
+
+    <div class="generate-wrap">
+      <button class="btn btn-primary" id="generate-btn" onclick="generatePrompt()">
+        Compile Master Reading Prompt
+      </button>
+    </div>
+  </div>
+
+  <div id="reading-output">
+    <div class="reading-container">
+      <div class="reading-header">
+        <div class="brand-line">Pipeline Synthesis Manifested</div>
+        <h1 style="font-size:clamp(22px,4vw,34px);">Your Copy-Paste Payload</h1>
+        <p style="color:var(--smoke); margin-top:10px; font-style:italic; font-size:15px;">Copy this block and drop it directly into Claude or Gemini to receive your multi-layered reading analysis.</p>
+      </div>
+
+      <div class="prompt-box-area" id="prompt-content"></div>
+
+      <button class="btn btn-primary" id="copy-btn" onclick="copyPromptText()">Copy Prompt to Clipboard</button>
+
+      <div class="new-reading-wrap">
+        <button class="btn btn-secondary" onclick="resetReading()">Modify Inputs</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="card-modal" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <h3 id="modal-title">Select Card</h3>
+    <p class="modal-sub" id="modal-position-label"></p>
+
+    <label class="reversed-toggle" id="modal-reversed-container" onclick="toggleReversed()">
+      <span class="toggle-box" id="reversed-box"></span>
+      Card orientation is reversed
+    </label>
+
+    <div class="card-grid" id="card-grid"></div>
+
+    <div class="modal-actions">
+      <button class="btn btn-secondary btn-sm" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── DATA MATRIX ARRAYS ──────────────────────────────────────────────────────
+const THOTH_DECK = {
+  majors: [
+    { id: 'T0', name: '0 · The Fool' }, { id: 'T1', name: 'I · The Magus' }, { id: 'T2', name: 'II · The Priestess' },
+    { id: 'T3', name: 'III · The Empress' }, { id: 'T4', name: 'IV · The Emperor' }, { id: 'T5', name: 'V · The Hierophant' },
+    { id: 'T6', name: 'VI · The Lovers' }, { id: 'T7', name: 'VII · The Chariot' }, { id: 'T8', name: 'VIII · Adjustment' },
+    { id: 'T9', name: 'IX · The Hermit' }, { id: 'T10', name: 'X · Fortune' }, { id: 'T11', name: 'XI · Lust' },
+    { id: 'T12', name: 'XII · The Hanged Man' }, { id: 'T13', name: 'XIII · Death' }, { id: 'T14', name: 'XIV · Art' },
+    { id: 'T15', name: 'XV · The Devil' }, { id: 'T16', name: 'XVI · The Tower' }, { id: 'T17', name: 'XVII · The Star' },
+    { id: 'T18', name: 'XVIII · The Moon' }, { id: 'T19', name: 'XIX · The Sun' }, { id: 'T20', name: 'XX · The Aeon' },
+    { id: 'T21', name: 'XX1 · The Universe' }
+  ],
+  wands: [
+    { id: 'TWK', name: 'Knight of Wands' }, { id: 'TWQ', name: 'Queen of Wands' }, { id: 'TWP', name: 'Prince of Wands' }, { id: 'TWS', name: 'Princess of Wands' },
+    { id: 'TW1', name: 'Ace of Wands' }, { id: 'TW2', name: 'Two of Wands (Dominion)' }, { id: 'TW3', name: 'Three of Wands (Virtue)' },
+    { id: 'TW4', name: 'Four of Wands (Completion)' }, { id: 'TW5', name: 'Five of Wands (Strife)' }, { id: 'TW6', name: 'Six of Wands (Victory)' },
+    { id: 'TW7', name: 'Seven of Wands (Valour)' }, { id: 'TW8', name: 'Eight of Wands (Swiftness)' }, { id: 'TW9', name: 'Nine of Wands (Strength)' },
+    { id: 'TW10', name: 'Ten of Wands (Oppression)' }
+  ],
+  cups: [
+    { id: 'TCK', name: 'Knight of Cups' }, { id: 'TCQ', name: 'Queen of Cups' }, { id: 'TCP', name: 'Prince of Cups' }, { id: 'TCS', name: 'Princess of Cups' },
+    { id: 'TC1', name: 'Ace of Cups' }, { id: 'TC2', name: 'Two of Cups (Love)' }, { id: 'TC3', name: 'Three of Cups (Abundance)' },
+    { id: 'TC4', name: 'Four of Cups (Luxury)' }, { id: 'TC5', name: 'Five of Cups (Disappointment)' }, { id: 'TC6', name: 'Six of Cups (Pleasure)' },
+    { id: 'TC7', name: 'Seven of Cups (Debauch)' }, { id: 'TC8', name: 'Eight of Cups (Indolence)' }, { id: 'TC9', name: 'Nine of Cups (Happiness)' },
+    { id: 'TC10', name: 'Ten of Cups (Satiety)' }
+  ],
+  swords: [
+    { id: 'TSK', name: 'Knight of Swords' }, { id: 'TSQ', name: 'Queen of Swords' }, { id: 'TSP', name: 'Prince of Swords' }, { id: 'TSS', name: 'Princess of Swords' },
+    { id: 'TS1', name: 'Ace of Swords' }, { id: 'TS2', name: 'Two of Swords (Peace)' }, { id: 'TS3', name: 'Three of Swords (Sorrow)' },
+    { id: 'TS4', name: 'Four of Swords (Truce)' }, { id: 'TS5', name: 'Five of Swords (Defeat)' }, { id: 'TS6', name: 'Six of Swords (Science)' },
+    { id: 'TS7', name: 'Seven of Swords (Futility)' }, { id: 'TS8', name: 'Eight of Swords (Interference)' }, { id: 'TS9', name: 'Nine of Swords (Cruelty)' },
+    { id: 'TS10', name: 'Ten of Swords (Ruin)' }
+  ],
+  disks: [
+    { id: 'TDK', name: 'Knight of Disks' }, { id: 'TDQ', name: 'Queen of Disks' }, { id: 'TDP', name: 'Prince of Disks' }, { id: 'TDS', name: 'Princess of Disks' },
+    { id: 'TD1', name: 'Ace of Disks' }, { id: 'TD2', name: 'Two of Disks (Change)' }, { id: 'TD3', name: 'Three of Disks (Works)' },
+    { id: 'TD4', name: 'Four of Disks (Power)' }, { id: 'TD5', name: 'Five of Disks (Worry)' }, { id: 'TD6', name: 'Six of Disks (Success)' },
+    { id: 'TD7', name: 'Seven of Disks (Failure)' }, { id: 'TD8', name: 'Eight of Disks (Prudence)' }, { id: 'TD9', name: 'Nine of Disks (Gain)' },
+    { id: 'TD10', name: 'Ten of Disks (Wealth)' }
+  ]
+};
+
+const AFRICAN_GODDESS_DECK = [
+  { suite: 'Threshold Guardians', name: 'Aunt Nancy (Anansi)' }, { suite: 'Threshold Guardians', name: 'Jumbie' }, { suite: 'Threshold Guardians', name: 'Medusa' }, { suite: 'Threshold Guardians', name: 'Sitira' }, { suite: 'Threshold Guardians', name: 'Soucouyant' },
+  { suite: 'Ancestors', name: 'Ayizan' }, { suite: 'Ancestors', name: 'Gang Gang Sara' }, { suite: 'Ancestors', name: 'Marie Laveau' }, { suite: 'Ancestors', name: 'Sara la Kali' }, { suite: 'Ancestors', name: 'Tituba' },
+  { suite: 'Conjurers', name: 'Aha Njoku' }, { suite: 'Conjurers', name: 'Eiye (Bird Spirits/Witches)' }, { suite: 'Conjurers', name: 'Mami Wata' }, { suite: 'Conjurers', name: 'Sawtche (Sarah Baartman)' }, { suite: 'Conjurers', name: 'Yasigi' },
+  { suite: 'Warriors', name: 'Atete' }, { suite: 'Warriors', name: 'Mbuya Nehanda' }, { suite: 'Warriors', name: 'Queen Mother Nanny' }, { suite: 'Warriors', name: 'Queen Yaa Asantewaa' }, { suite: 'Warriors', name: 'Yemaya' },
+  { suite: 'Shadows', name: 'Ammit' }, { suite: 'Shadows', name: 'Mamlambo' }, { suite: 'Shadows', name: 'Wounded Healer' },
+  { suite: 'Lovers', name: 'Erzulie Dantor' }, { suite: 'Lovers', name: 'Oshun' }, { suite: 'Lovers', name: 'Qetesh' },
+  { suite: 'Griots', name: 'Aje' }, { suite: 'Griots', name: 'Mame Coumba Bang' }, { suite: 'Griots', name: 'Mama Djombo' }, { suite: 'Griots', name: 'Queen Nandi' },
+  { suite: 'Queens', name: 'Asase Yaa' }, { suite: 'Queens', name: 'Candace of Meroë' }, { suite: 'Queens', name: 'Ngame' }, { suite: 'Queens', name: 'Queen Nefertiti' }, { suite: 'Queens', name: 'Queen of Sheba' },
+  { suite: 'High Priestesses', name: 'Iset (Isis)' }, { suite: 'High Priestesses', name: 'Mawu-Lisa' }, { suite: 'High Priestesses', name: 'Modjadji' }, { suite: 'High Priestesses', name: 'Nana Buluku' }, { suite: 'High Priestesses', name: 'Tanit' }
+];
+
+const THOTH_FLAT = [...THOTH_DECK.majors, ...THOTH_DECK.wands, ...THOTH_DECK.cups, ...THOTH_DECK.swords, ...THOTH_DECK.disks];
+
+const SPREADS = {
+  '3card': [{ key: 'past', label: 'Past Analysis Node' }, { key: 'present', label: 'Present Mirror Node' }, { key: 'future', label: 'Future / Emerging Trajectory' }],
+  'celtic': [
+    { key: 'present', label: '1. Present Operational State' }, { key: 'cross', label: '2. Immediate Friction/The Cross' }, { key: 'foundation', label: '3. Root Foundation / Unconscious' },
+    { key: 'past', label: '4. Recent Processing Past' }, { key: 'crown', label: '5. Highest Potential Crown' }, { key: 'future', label: '6. Near Term Manifestation Future' },
+    { key: 'self', label: '7. The Querent’s True Stance' }, { key: 'environment', label: '8. Environmental & Field Pressures' }, { key: 'hopes', label: '9. Hopes, Fears & Shadow Projections' },
+    { key: 'outcome', label: '10. Ultimate Systemic Outcome' }
+  ],
+  '5element': [{ key: 'earth', label: 'Root / Earth (Density/Material)' }, { key: 'water', label: 'Water / Emotion (Intuitive Field)' }, { key: 'fire', label: 'Fire / Will (Creative Ignition)' }, { key: 'air', label: 'Air / Mind (Logic/Beliefs)' }, { key: 'spirit', label: 'Spirit / Soul (Evolutionary Direction)' }],
+  'relationship': [{ key: 'you', label: 'Your Present Archetype' }, { key: 'them', label: 'Their Present Archetype' }, { key: 'connection', label: 'The Intersecting Connection' }, { key: 'obstacle', label: 'The Core Structural Obstacle' }, { key: 'potential', label: 'Alchemical Integration Potential' }, { key: 'wisdom', label: 'Root Ancestral Wisdom' }],
+  'shadow': [{ key: 'shadow', label: 'The Repressed Shadow Node' }, { key: 'wound', label: 'The Active Wound Architecture' }, { key: 'gift', label: 'The Hidden Alchemical Gift' }, { key: 'integration', label: 'The Path of Active Integration' }],
+  'single': [{ key: 'message', label: 'The Prime Strategic Mandate' }]
+};
+
+// ─── STATE ARCHITECTURE ──────────────────────────────────────────────────────
+let currentSpread = [];
+let selectedThothCards = {};  
+let selectedOracleCards = {}; 
+let modalTargetType = 'thoth'; // 'thoth' or 'oracle'
+let modalPositionKey = null;
+let modalReversed = false;
+let readingType = 'general';
+
+window.onload = () => {
+  buildSpread();
+  buildCardGrid('thoth');
+};
+
+function selectType(tab) {
+  document.querySelectorAll('.type-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  readingType = tab.dataset.type;
+  
+  const partnerSec = document.getElementById('partner-section');
+  if (readingType === 'relational') {
+    partnerSec.style.display = '';
+    document.getElementById('spread-select').value = 'relationship';
+  } else {
+    partnerSec.style.display = 'none';
+    if (document.getElementById('spread-select').value === 'relationship') {
+      document.getElementById('spread-select').value = '3card';
+    }
+  }
+  buildSpread();
+}
+
+function buildSpread() {
+  const key = document.getElementById('spread-select').value;
+  currentSpread = SPREADS[key];
+  selectedThothCards = {};
+  selectedOracleCards = {};
+  renderPositions();
+  renderOraclePositions();
+}
+
+function renderPositions() {
+  const container = document.getElementById('spread-positions');
+  container.innerHTML = '';
+  currentSpread.forEach(pos => {
+    const slot = document.createElement('div');
+    slot.className = 'position-slot' + (selectedThothCards[pos.key] ? ' filled' : '');
+    slot.onclick = () => openCardModal('thoth', pos.key, pos.label);
+    const sel = selectedThothCards[pos.key];
+    slot.innerHTML = `
+      <div class="position-name">${pos.label}</div>
+      ${sel ? `<div class="card-name-display">${sel.card.name}</div>${sel.reversed ? '<span class="badge reversed-badge">reversed</span>' : ''}` : `<div class="card-placeholder">select thoth card</div>`}`;
+    container.appendChild(slot);
+  });
+}
+
+function renderOraclePositions() {
+  const container = document.getElementById('oracle-positions');
+  const labelEl = document.getElementById('oracle-section-label');
+  container.innerHTML = '';
+  
+  if (readingType === 'relational') {
+    labelEl.textContent = "African Goddess Overlap Anchors (Two Card Pull for Relational Fields)";
+    
+    // First Relational Anchor Slot
+    const slot1 = document.createElement('div');
+    slot1.className = 'position-slot oracle-slot' + (selectedOracleCards['oracle1'] ? ' filled' : '');
+    slot1.onclick = () => openCardModal('oracle', 'oracle1', 'Querent Mirror Oracle Anchor');
+    const sel1 = selectedOracleCards['oracle1'];
+    slot1.innerHTML = `<div class="position-name">Querent Oracle Anchor</div>${sel1 ? `<div class="card-name-display">${sel1.card.name}</div><span class="badge oracle-badge">${sel1.card.suite}</span>` : `<div class="card-placeholder">select oracle card</div>`}`;
+    container.appendChild(slot1);
+    
+    // Second Relational Anchor Slot
+    const slot2 = document.createElement('div');
+    slot2.className = 'position-slot oracle-slot' + (selectedOracleCards['oracle2'] ? ' filled' : '');
+    slot2.onclick = () => openCardModal('oracle', 'oracle2', 'Partner Mirror Oracle Anchor');
+    const sel2 = selectedOracleCards['oracle2'];
+    slot2.innerHTML = `<div class="position-name">Partner Oracle Anchor</div>${sel2 ? `<div class="card-name-display">${sel2.card.name}</div><span class="badge oracle-badge">${sel2.card.suite}</span>` : `<div class="card-placeholder">select oracle card</div>`}`;
+    container.appendChild(slot2);
+  } else {
+    labelEl.textContent = "African Goddess Overlap Anchor (Overall Operational Field)";
+    const slot = document.createElement('div');
+    slot.className = 'position-slot oracle-slot' + (selectedOracleCards['oracle_main'] ? ' filled' : '');
+    slot.onclick = () => openCardModal('oracle', 'oracle_main', 'Overall Reading Energy Overlay');
+    const sel = selectedOracleCards['oracle_main'];
+    slot.innerHTML = `<div class="position-name">Overall Field Energy</div>${sel ? `<div class="card-name-display">${sel.card.name}</div><span class="badge oracle-badge">${sel.card.suite}</span>` : `<div class="card-placeholder">select oracle card</div>`}`;
+    container.appendChild(slot);
+  }
+}
+
+// ─── MODAL CONTROLS ──────────────────────────────────────────────────────────
+function openCardModal(targetType, posKey, posLabel) {
+  modalTargetType = targetType;
+  modalPositionKey = posKey;
+  
+  const revToggle = document.getElementById('modal-reversed-container');
+  document.getElementById('modal-title').textContent = targetType === 'thoth' ? 'Select Thoth Deck Card' : 'Select African Goddess Oracle Card';
+  document.getElementById('modal-position-label').textContent = `Position: ${posLabel}`;
+  
+  if (targetType === 'thoth') {
+    revToggle.style.display = 'flex';
+    modalReversed = selectedThothCards[posKey]?.reversed || false;
+    updateReversedBox();
+  } else {
+    revToggle.style.display = 'none';
+  }
+  
+  buildCardGrid(targetType);
+  document.getElementById('card-modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('card-modal').classList.remove('open');
+  modalPositionKey = null;
+}
+
+function closeModalOutside(e) {
+  if (e.target === document.getElementById('card-modal')) closeModal();
+}
+
+function toggleReversed() {
+  modalReversed = !modalReversed;
+  updateReversedBox();
+  if (modalPositionKey && selectedThothCards[modalPositionKey]) {
+    selectedThothCards[modalPositionKey].reversed = modalReversed;
+    renderPositions();
+  }
+}
+
+function updateReversedBox() {
+  document.getElementById('reversed-box').textContent = modalReversed ? '✕' : '';
+}
+
+function buildCardGrid(targetType) {
+  const grid = document.getElementById('card-grid');
+  grid.innerHTML = '';
+
+  if (targetType === 'thoth') {
+    const sections = [
+      { label: 'The Major Arcana', cards: THOTH_DECK.majors },
+      { label: 'Suit of Wands', cards: THOTH_DECK.wands },
+      { label: 'Suit of Cups', cards: THOTH_DECK.cups },
+      { label: 'Suit of Swords', cards: THOTH_DECK.swords },
+      { label: 'Suit of Disks', cards: THOTH_DECK.disks }
+    ];
+    sections.forEach(sec => {
+      const suiteHeader = document.createElement('div');
+      suiteHeader.className = 'card-suite';
+      suiteHeader.textContent = sec.label;
+      grid.appendChild(suiteHeader);
+      
+      sec.cards.forEach(card => {
+        const btn = document.createElement('button');
+        btn.className = 'card-btn';
+        btn.textContent = card.name;
+        btn.onclick = () => chooseCard(card);
+        grid.appendChild(btn);
+      });
+    });
+  } else {
+    // African Goddess Oracle Processing Grouped By Structural Temples
+    const suites = [...new Set(AFRICAN_GODDESS_DECK.map(c => c.suite))];
+    suites.forEach(suiteName => {
+      const suiteHeader = document.createElement('div');
+      suiteHeader.className = 'card-suite';
+      suiteHeader.textContent = `Divine Inner Temple: ${suiteName}`;
+      grid.appendChild(suiteHeader);
+      
+      AFRICAN_GODDESS_DECK.filter(c => c.suite === suiteName).forEach(card => {
+        const btn = document.createElement('button');
+        btn.className = 'card-btn';
+        btn.textContent = card.name;
+        btn.onclick = () => chooseCard(card);
+        grid.appendChild(btn);
+      });
+    });
+  }
+}
+
+function chooseCard(card) {
+  if (!modalPositionKey) return;
+  if (modalTargetType === 'thoth') {
+    selectedThothCards[modalPositionKey] = { card, reversed: modalReversed };
+    renderPositions();
+  } else {
+    selectedOracleCards[modalPositionKey] = { card };
+    renderOraclePositions();
+  }
+  closeModal();
+}
+
+function randomizeAll() {
+  // Randomize Thoth Deck Array
+  const usedThoth = new Set();
+  currentSpread.forEach(pos => {
+    let randCard;
+    do { randCard = THOTH_FLAT[Math.floor(Math.random() * THOTH_FLAT.length)]; }
+    while (usedThoth.has(randCard.id));
+    usedThoth.add(randCard.id);
+    selectedThothCards[pos.key] = { card: randCard, reversed: Math.random() < 0.20 };
+  });
+  
+  // Randomize African Goddess Selection Points
+  const usedOracle = new Set();
+  if (readingType === 'relational') {
+    let o1, o2;
+    o1 = AFRICAN_GODDESS_DECK[Math.floor(Math.random() * AFRICAN_GODDESS_DECK.length)];
+    do { o2 = AFRICAN_GODDESS_DECK[Math.floor(Math.random() * AFRICAN_GODDESS_DECK.length)]; } while (o1.name === o2.name);
+    selectedOracleCards['oracle1'] = { card: o1 };
+    selectedOracleCards['oracle2'] = { card: o2 };
+  } else {
+    const oMain = AFRICAN_GODDESS_DECK[Math.floor(Math.random() * AFRICAN_GODDESS_DECK.length)];
+    selectedOracleCards['oracle_main'] = { card: oMain };
+  }
+  
+  renderPositions();
+  renderOraclePositions();
+}
+
+// ─── PIPELINE PACKAGING ENGINE GENERATION ────────────────────────────────────
+function generatePrompt() {
+  const thothKeys = Object.keys(selectedThothCards);
+  const oracleKeys = Object.keys(selectedOracleCards);
+  
+  if (thothKeys.length === 0 || oracleKeys.length === 0) {
+    alert('Please verify you have mapped at least one Thoth Card and your African Goddess Oracle placement before compiling.');
+    return;
+  }
+
+  const name = document.getElementById('querent-name').value.trim();
+  const birthDate = document.getElementById('birth-date').value;
+  const birthTime = document.getElementById('birth-time').value;
+  const birthPlace = document.getElementById('birth-place').value.trim();
+  const question = document.getElementById('question').value.trim();
+  const context = document.getElementById('context').value.trim();
+  const partnerName = document.getElementById('partner-name').value.trim();
+  const partnerBirth = document.getElementById('partner-birth').value;
+  const partnerPlace = document.getElementById('partner-place').value.trim();
+
+  // Parse arrays into formatted strings
+  const thothLines = currentSpread
+    .filter(pos => selectedThothCards[pos.key])
+    .map(pos => {
+      const sel = selectedThothCards[pos.key];
+      return `- ${pos.label}: ${sel.card.name}${sel.reversed ? ' [REVERSED SHADOW EXPRESSION]' : ''}`;
+    }).join('\n');
+
+  let oracleLines = "";
+  if (readingType === 'relational') {
+    const o1 = selectedOracleCards['oracle1'];
+    const o2 = selectedOracleCards['oracle2'];
+    if (o1) oracleLines += `- Querent Field Mirror Energy: ${o1.card.name} (Temple Suite: ${o1.card.suite})\n`;
+    if (o2) oracleLines += `- Partner Field Mirror Energy: ${o2.card.name} (Temple Suite: ${o2.card.suite})`;
+  } else {
+    const oMain = selectedOracleCards['oracle_main'];
+    if (oMain) oracleLines += `- Overall Baseline Field Energy Overlay: ${oMain.card.name} (Temple Suite: ${oMain.card.suite})`;
+  }
+
+  const masterPrompt = `You are an expert dual-system synthesis engine pulling from two specific metaphysical and depth psychological frameworks:
+1. The Thoth Tarot System (grounded in Aleister Crowley's initiatory text, Frieda Harris's projective geometry, Hermetic Kabbalah, and Jungian analytical depth psychology).
+2. The African Goddess Rising Oracle by Abiola Abrams (a 44-card spiritual system divided into 9 Divine Inner Temples tracking ancestral lineages, protection gates, and primordial goddess currents).
+
+You must combine these frameworks into an uncompromising, rigorous, deeply poetic, and highly precise clinical psychological reading based on the parameters passed below.
+
+SYNTHESIS ARCHITECTURE MANDATES:
+- Balance the intellectual, analytical, and Kabbalistic structural rigor of the Thoth system with the profound ancestral, protective, and elemental wisdom of the African Goddess Rising Temples.
+- The African Goddess card acts as the overarching baseline field container (or dual mirror fields if a relational alignment is pulled). Use it to frame the structural current running underneath the specific Thoth Tarot cards.
+- Do not deliver generic surface-level card keywords. Synthesize the precise elemental attributes, astrological alignments, shadow positions, and context directly into an evaluation without spiritual bypass.
+- Write in flowing, substantive prose paragraphs. Strictly avoid bullet points or em dashes within the interpretation fields.
+
+Structure your multi-layered response using these exact section headers:
+THE INITIATORY CURRENT (The baseline integration field of the African Goddess Rising Temple and the query)
+THE ARCHITECTURAL ARRAY (Prose mapping breakdown of the Thoth Tarot placements and their exact synthesis)
+THE KABBALISTIC EXPANSION (Analysis of paths, decanates, or elemental tensions active in the layout)
+THE SHADOW CRUCIBLE (Direct excavation of hidden projections, defense mechanisms, or repressions occurring)
+THE ORACLE'S COUNSEL & MANDATE (Practical, zero-bypass operational instructions for integration)
+CLOSING INTEGRATION MANTRAS (Substantiated developmental mantras tying the Goddess and Thoth lines together)
+
+Operational Parameters for this Session:
+- Reading Focus Category: ${readingType.toUpperCase()}
+- Querent Profile: ${name ? name : 'Anonymous Profile'} ${birthDate ? `(Born: ${birthDate} ${birthTime ? `at ${birthTime}` : ''} in ${birthPlace ? birthPlace : 'unspecified location'})` : ''}
+${partnerName || partnerBirth ? `- Partner Profile: ${partnerName ? partnerName : 'Unnamed Partner'} ${partnerBirth ? `(Born: ${partnerBirth} ${partnerPlace ? `in ${partnerPlace}` : ''})` : ''}\n` : ''}
+- Core Active Inquiry: ${question ? question : 'General systemic tracking check-in.'}
+
+Placements Mapped from Array Canvas:
+[Primary Thoth Placements]
+${thothLines}
+
+[African Goddess Oracle Placements]
+${oracleLines}
+
+${context ? `Active Matrix Friction Context:\n${context}\n` : ''}
+Generate the complete reading following this structure. Provide comprehensive, psychological accuracy.`;
+
+  document.getElementById('reading-form').style.display = 'none';
+  document.getElementById('reading-output').style.display = 'block';
+  
+  const contentBox = document.getElementById('prompt-content');
+  contentBox.textContent = masterPrompt;
+  document.getElementById('copy-btn').textContent = "Copy Prompt to Clipboard";
+}
+
+function copyPromptText() {
+  const text = document.getElementById('prompt-content').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    document.getElementById('copy-btn').textContent = "✓ Copied to Clipboard Successfully!";
+  }).catch(err => {
+    alert("Copy failed automatically. Please highlight and copy the contents inside the box container manually.");
+  });
+}
+
+function resetReading() {
+  document.getElementById('reading-form').style.display = 'block';
+  document.getElementById('reading-output').style.display = 'none';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
+
+```

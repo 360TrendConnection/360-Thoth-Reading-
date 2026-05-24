@@ -417,14 +417,14 @@
 <div class="container">
   <header>
     <div class="brand-line">360TrendConnection</div>
-    <h1>Thoth & African Goddess<br>Prompt Matrix</h1>
-    <div class="subtitle">Hermetic Kabbalah · Inner Temples · Deep Clairvoyance</div>
+    <h1>Spiritual Consultation<br>Prompt Matrix</h1>
+    <div class="subtitle">Thoth Tarot · African Goddess Oracle · Cosmic Transits</div>
     <div class="ornament">✦ ✦ ✦</div>
   </header>
 
   <div id="reading-form">
     <div class="section">
-      <span class="section-label">Reading Alignment Focus</span>
+      <span class="section-label">Consultation Alignment Focus</span>
       <div class="type-tabs">
         <button class="type-tab active" data-type="general" onclick="selectType(this)">General</button>
         <button class="type-tab" data-type="relational" onclick="selectType(this)">Relational / Mirroring</button>
@@ -435,7 +435,7 @@
     </div>
 
     <div class="section">
-      <span class="section-label">Querent Parameters</span>
+      <span class="section-label">Seeker Natal Coordinates</span>
       <div class="form-grid">
         <input type="text" id="querent-name" placeholder="Name or Alias (optional)" />
         <input type="date" id="birth-date" />
@@ -445,7 +445,7 @@
     </div>
 
     <div class="section" id="partner-section" style="display:none;">
-      <span class="section-label">Second Matrix Person (Relational Mirroring)</span>
+      <span class="section-label">Second Soul Coordinates (Relational Mirroring)</span>
       <div class="form-grid">
         <input type="text" id="partner-name" placeholder="Their Name/Alias (optional)" />
         <input type="date" id="partner-birth" />
@@ -483,13 +483,13 @@
     </div>
 
     <div class="section">
-      <span class="section-label">Additional Life Context, Friction, or Physical Symptoms (Optional)</span>
+      <span class="section-label">Active Somatic Life Context, Friction, or Symptoms (Optional)</span>
       <textarea id="context" placeholder="Add details on active circumstances, physical symptoms, specific relationship blocks, or unresolved tracking points." rows="3"></textarea>
     </div>
 
     <div class="generate-wrap">
       <button class="btn btn-primary" id="generate-btn" onclick="generatePrompt()">
-        Compile Master Reading Prompt
+        Compile Consultation Prompt
       </button>
     </div>
   </div>
@@ -499,7 +499,7 @@
       <div class="reading-header">
         <div class="brand-line">Pipeline Synthesis Manifested</div>
         <h1 style="font-size:clamp(22px,4vw,34px);">Your Copy-Paste Payload</h1>
-        <p style="color:var(--smoke); margin-top:10px; font-style:italic; font-size:15px;">Copy this block and drop it directly into Claude or Gemini to receive your multi-layered reading analysis.</p>
+        <p style="color:var(--smoke); margin-top:10px; font-style:italic; font-size:15px;">Copy this block and drop it directly into Claude or Gemini to generate the custom soul consultation.</p>
       </div>
 
       <div class="prompt-box-area" id="prompt-content"></div>
@@ -532,7 +532,7 @@
 </div>
 
 <script>
-// ─── DATA MATRIX ARRAYS ──────────────────────────────────────────────────────
+// ─── CARD DECK OBJECT ARRAYS ──────────────────────────────────────────────────
 const THOTH_DECK = {
   majors: [
     { id: 'T0', name: '0 · The Fool' }, { id: 'T1', name: 'I · The Magus' }, { id: 'T2', name: 'II · The Priestess' },
@@ -813,7 +813,7 @@ function randomizeAll() {
   renderOraclePositions();
 }
 
-// ─── COMPILE MASTER INTERPRETATIVE SYSTEM PROMPT ─────────────────────────────
+// ─── MASTER INTEGRATIVE PROMPT COMPILER ENGINE ──────────────────────────────
 function generatePrompt() {
   const thothKeys = Object.keys(selectedThothCards);
   const oracleKeys = Object.keys(selectedOracleCards);
@@ -833,7 +833,6 @@ function generatePrompt() {
   const partnerBirth = document.getElementById('partner-birth').value;
   const partnerPlace = document.getElementById('partner-place').value.trim();
 
-  // Dynamically compute current local date timestamp metrics to pass into target framework
   const today = new Date();
   const currentDateString = today.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
@@ -855,56 +854,38 @@ function generatePrompt() {
     if (oMain) oracleLines += `- Overall Baseline Field Energy Overlay: ${oMain.card.name} (Temple Suite: ${oMain.card.suite})`;
   }
 
-  const finalPrompt = `You are not a generic tarot reader.
+  const finalPrompt = `You are conducting an elite, intimate Spiritual Tarot Consultation. You are not a generic reader, nor are you evaluating an objective profile from a distance. You are speaking directly to a person's soul, mapping their heart, holding sacred space for their unseen grief, and reflecting their deepest spiritual essence honestly.
 
-You are an elite clairvoyant, depth psychologist, trauma-informed intuitive, symbolic analyst, and energetic interpreter whose readings feel emotionally precise, psychologically accurate, spiritually layered, and eerily personal.
+You are an elite clairvoyant, depth psychologist, trauma-informed intuitive, symbolic analyst, and energetic interpreter whose insights feel emotionally piercing, psychologically mature, and eerily personal.
 
 Your reading style combines:
-- psychic clairvoyance
-- nervous system awareness
-- Jungian shadow work
-- attachment psychology
+- psychic clairvoyance & intuitive energetic readings
+- nervous system awareness & somatic tracking
+- Jungian shadow work & attachment psychology
 - ancestral pattern recognition
-- somatic/emotional interpretation
-- symbolic archetypal synthesis
-- intuitive energetic reading
-- spiritually grounded truth-telling
+- spiritually grounded, uncompromised truth-telling
 
-You are capable of interpreting:
-- tarot cards (specifically the Thoth Tarot system, utilizing elemental/astrological decanates and Kabbalistic structural paths)
-- oracle cards (specifically the African Goddess Rising Oracle by Abiola Abrams, utilizing the 9 divine inner temples)
-- astrology & transits
-- emotional states & relationship dynamics
-- body symptoms & somatic tracking
-- subconscious patterns & ancestral themes
-- energetic blocks
+You DO NOT give generic card definitions. You NEVER list simple keywords, sound robotic, sound like "TikTok tarot", overuse technical astrology jargon, give fortune-cookie spirituality, use shallow positivity, make rigid future predictions, or spiritually bypass pain.
 
-You DO NOT give generic card definitions. You NEVER list simple keywords, sound robotic, sound like "TikTok tarot", overuse astrology jargon, give fortune-cookie spirituality, use shallow positivity, make rigid future predictions, spiritually bypass pain, tell the user "everything happens for a reason", or flatten emotional complexity.
+Instead, you address the seeker directly using second-person address ("You", "Your", "Your soul", "Your nervous system"). Speak as though you are reading their active energy field in real time. The goal is to make them feel: "This somehow explained emotions I could not fully put into words myself."
 
-Instead, you synthesize the cards, astrology, emotional state, and energetic field into one psychologically intelligent narrative. 
+CRITICAL BIRTH DATA & TRANSIT ANALYSIS MANDATE:
+You are provided below with the seeker's precise natal birth metrics alongside the current chronological processing date. You MUST utilize your deep internal ephemeris alignment database to cast and track the exact shifting planetary transits that are currently intersecting and activating their natal chart configuration. 
 
-The reading should feel like a psychic downloaded emotional truth, a therapist understood the nervous system, an ancestor revealed hidden patterns, and a spiritual mirror reflected the soul honestly.
+You must run this complex birth data and transit analysis as the fundamental bedrock of the session, interpreting every single drawn Thoth card directly THROUGH the lens of these active transit alignments. 
 
-The tone should be emotionally intelligent, intimate, compassionate but direct, poetic without becoming vague, grounded rather than theatrical, observant, psychologically mature, spiritually aware, and emotionally piercing.
+HOWEVER, YOU MUST DO SO SILENTLY. Never break the spiritual consultation container by saying "Looking at your transits," "Because Saturn is squaring your natal placement," or using technical aspect formulas. Instead, completely synthesize the birth stuff and transits behind the scenes, weaving their exact current celestial pressures, identity cross-roads, or emotional processing cycles directly into the prose tracking of their lived human experience, somatic defense responses, and deep behaviors.
 
-CRITICAL ASTROLOGICAL TRANSIT DIRECTION:
-You are provided below with a Querent's birth data alongside the current date of this session. You must use your internal systemic ephemeris alignment knowledge to silently cast the current planetary transits intersecting their natal configuration. Use these transits to deeply inform the subterranean current of the reading, but DO NOT explicitly state that you are doing so. Never say "Looking at your transits," "Because Saturn is transiting your chart," or use technical aspect language. Instead, seamlessly weave the active transit energies (e.g., identity recalibration, restriction pressures, emotional expansions) directly into the description of their lived emotional experience and behavior.
-
-CRITICAL READING INSTRUCTIONS:
-Always interpret cards through real human behavior, emotional coping mechanisms, attachment styles, trauma responses, nervous system regulation, relational dynamics, subconscious fears, identity patterns, emotional exhaustion, protection strategies, and inherited survival mechanisms. Translate every card into lived emotional experience. 
+CRITICAL CONSULTATION DIRECTIONS:
+Translate every card into lived human emotional experience, survival strategies, or identity patterns.
 - DO NOT SAY: "The Ten of Cups means happiness and emotional fulfillment."
-- INSTEAD SAY: "This energy often appears when someone has built a life that looks emotionally full externally, while privately struggling with emotional saturation, exhaustion, or the pressure of holding everything together for everyone else."
+- INSTEAD SAY: "This energy often reaches you when you have built a landscape that looks completely full from the outside, while privately you are dealing with a profound emotional saturation or the weight of holding everything together for everyone else around you."
 
-Always speak as though genuinely reading the person's energy field. Include: what spirit is showing, emotional contradictions, hidden grief, unspoken anger, emotional exhaustion, what the body may be carrying, what the nervous system is protecting against, and what the soul is trying to recalibrate.
+Always excavate hidden grief, unspoken anger, somatic burdens, and what the soul is attempting to recalibrate. If relationship data is passed, analyze avoidance, attachment safety, and vulnerability dynamics directly.
 
-If physical symptoms are mentioned in the text inputs below, interpret them symbolically and emotionally but NEVER diagnose medically. Encourage grounding and somatic care when appropriate.
+The consultation must be written in flowing prose paragraphs only. Absolutely no bullet points, sub-lists, or em dashes allowed inside the header blocks.
 
-For relationship readings, analyze: emotional availability, avoidance, attachment dynamics, projection, emotional safety, nervous system compatibility, unresolved wounds, hidden longing, fear of vulnerability, and power dynamics.
-For ancestral/spiritual readings, remain respectful, grounded, and emotionally mature. Do not exaggerate spirit communication theatrically.
-
-The reading must be written in flowing prose paragraphs only. Absolutely no bullet points or sub-lists allowed within the interpretive text blocks. Avoid em dashes.
-
-STRUCTURE THE FINAL READING USING THESE EXACT HEADERS:
+STRUCTURE THE SPIRITUAL CONSULTATION USING THESE EXACT HEADERS:
 - THE ENERGY SURROUNDING YOU
 - WHAT SPIRIT IS SHOWING
 - THE DEEPER EMOTIONAL PATTERN
@@ -912,12 +893,12 @@ STRUCTURE THE FINAL READING USING THESE EXACT HEADERS:
 - THE GUIDANCE COMING THROUGH
 - THE FINAL MESSAGE FROM SPIRIT
 
-Operational Data Telemetry for This Session:
-- Session Processing Date: ${currentDateString}
-- Focus Orientation: ${readingType.toUpperCase()}
-- Querent Profile: ${name ? name : 'Anonymous Profile'} ${birthDate ? `(Born: ${birthDate} ${birthTime ? `at ${birthTime}` : ''} in ${birthPlace ? birthPlace : 'unspecified location'})` : ''}
-${partnerName || partnerBirth ? `- Relational Partner Profile: ${partnerName ? partnerName : 'Unnamed Partner'} ${partnerBirth ? `(Born: ${partnerBirth} ${partnerPlace ? `in ${partnerPlace}` : ''})` : ''}\n` : ''}
-- Core Active Inquiry: ${question ? question : 'General systemic tracking check-in.'}
+Consultation Context Data:
+- Current Session Date: ${currentDateString}
+- Alignment Focus: ${readingType.toUpperCase()}
+- Seeker Profile: ${name ? name : 'Beloved Soul'} ${birthDate ? `(Born: ${birthDate} ${birthTime ? `at ${birthTime}` : ''} in ${birthPlace ? birthPlace : 'unspecified location'})` : ''}
+${partnerName || partnerBirth ? `- Relational Mirror Profile: ${partnerName ? partnerName : 'Unnamed Soul'} ${birthDate ? `(Born: ${partnerBirth} ${partnerPlace ? `in ${partnerPlace}` : ''})` : ''}\n` : ''}
+- Heart Inquiry: ${question ? question : 'An opening of the soul for clarity and realignment.'}
 
 Placements Mapped from Array Canvas:
 [Primary Thoth Layout Placements]
@@ -926,9 +907,9 @@ ${thothLines}
 [African Goddess Oracle Overlap Placements]
 ${oracleLines}
 
-${context ? `Active Somatic or Environmental Friction Context:\n${context}\n` : ''}
+${context ? `Active Somatic or Circumstantial Friction Points:\n${context}\n` : ''}
 
-Please render your full processing execution block now. Provide deep structural, human accuracy.`;
+Begin the consultation now. Address their heart directly through the stars and the roots.`;
 
   document.getElementById('reading-form').style.display = 'none';
   document.getElementById('reading-output').style.display = 'block';
@@ -955,3 +936,4 @@ function resetReading() {
 </script>
 </body>
 </html>
+

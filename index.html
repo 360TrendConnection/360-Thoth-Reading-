@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -419,7 +418,7 @@
   <header>
     <div class="brand-line">360TrendConnection</div>
     <h1>Thoth & African Goddess<br>Prompt Matrix</h1>
-    <div class="subtitle">Hermetic Kabbalah · Inner Temples · Shadow Work</div>
+    <div class="subtitle">Hermetic Kabbalah · Inner Temples · Deep Clairvoyance</div>
     <div class="ornament">✦ ✦ ✦</div>
   </header>
 
@@ -484,7 +483,7 @@
     </div>
 
     <div class="section">
-      <span class="section-label">Additional Life Context or Friction Points (Optional)</span>
+      <span class="section-label">Additional Life Context, Friction, or Physical Symptoms (Optional)</span>
       <textarea id="context" placeholder="Add details on active circumstances, physical symptoms, specific relationship blocks, or unresolved tracking points." rows="3"></textarea>
     </div>
 
@@ -603,11 +602,10 @@ const SPREADS = {
   'single': [{ key: 'message', label: 'The Prime Strategic Mandate' }]
 };
 
-// ─── STATE ARCHITECTURE ──────────────────────────────────────────────────────
 let currentSpread = [];
 let selectedThothCards = {};  
 let selectedOracleCards = {}; 
-let modalTargetType = 'thoth'; // 'thoth' or 'oracle'
+let modalTargetType = 'thoth'; 
 let modalPositionKey = null;
 let modalReversed = false;
 let readingType = 'general';
@@ -667,7 +665,6 @@ function renderOraclePositions() {
   if (readingType === 'relational') {
     labelEl.textContent = "African Goddess Overlap Anchors (Two Card Pull for Relational Fields)";
     
-    // First Relational Anchor Slot
     const slot1 = document.createElement('div');
     slot1.className = 'position-slot oracle-slot' + (selectedOracleCards['oracle1'] ? ' filled' : '');
     slot1.onclick = () => openCardModal('oracle', 'oracle1', 'Querent Mirror Oracle Anchor');
@@ -675,7 +672,6 @@ function renderOraclePositions() {
     slot1.innerHTML = `<div class="position-name">Querent Oracle Anchor</div>${sel1 ? `<div class="card-name-display">${sel1.card.name}</div><span class="badge oracle-badge">${sel1.card.suite}</span>` : `<div class="card-placeholder">select oracle card</div>`}`;
     container.appendChild(slot1);
     
-    // Second Relational Anchor Slot
     const slot2 = document.createElement('div');
     slot2.className = 'position-slot oracle-slot' + (selectedOracleCards['oracle2'] ? ' filled' : '');
     slot2.onclick = () => openCardModal('oracle', 'oracle2', 'Partner Mirror Oracle Anchor');
@@ -693,7 +689,6 @@ function renderOraclePositions() {
   }
 }
 
-// ─── MODAL CONTROLS ──────────────────────────────────────────────────────────
 function openCardModal(targetType, posKey, posLabel) {
   modalTargetType = targetType;
   modalPositionKey = posKey;
@@ -763,7 +758,6 @@ function buildCardGrid(targetType) {
       });
     });
   } else {
-    // African Goddess Oracle Processing Grouped By Structural Temples
     const suites = [...new Set(AFRICAN_GODDESS_DECK.map(c => c.suite))];
     suites.forEach(suiteName => {
       const suiteHeader = document.createElement('div');
@@ -795,7 +789,6 @@ function chooseCard(card) {
 }
 
 function randomizeAll() {
-  // Randomize Thoth Deck Array
   const usedThoth = new Set();
   currentSpread.forEach(pos => {
     let randCard;
@@ -805,8 +798,6 @@ function randomizeAll() {
     selectedThothCards[pos.key] = { card: randCard, reversed: Math.random() < 0.20 };
   });
   
-  // Randomize African Goddess Selection Points
-  const usedOracle = new Set();
   if (readingType === 'relational') {
     let o1, o2;
     o1 = AFRICAN_GODDESS_DECK[Math.floor(Math.random() * AFRICAN_GODDESS_DECK.length)];
@@ -822,7 +813,7 @@ function randomizeAll() {
   renderOraclePositions();
 }
 
-// ─── PIPELINE PACKAGING ENGINE GENERATION ────────────────────────────────────
+// ─── COMPILE MASTER INTERPRETATIVE SYSTEM PROMPT ─────────────────────────────
 function generatePrompt() {
   const thothKeys = Object.keys(selectedThothCards);
   const oracleKeys = Object.keys(selectedOracleCards);
@@ -842,7 +833,6 @@ function generatePrompt() {
   const partnerBirth = document.getElementById('partner-birth').value;
   const partnerPlace = document.getElementById('partner-place').value.trim();
 
-  // Parse arrays into formatted strings
   const thothLines = currentSpread
     .filter(pos => selectedThothCards[pos.key])
     .map(pos => {
@@ -861,47 +851,82 @@ function generatePrompt() {
     if (oMain) oracleLines += `- Overall Baseline Field Energy Overlay: ${oMain.card.name} (Temple Suite: ${oMain.card.suite})`;
   }
 
-  const masterPrompt = `You are an expert dual-system synthesis engine pulling from two specific metaphysical and depth psychological frameworks:
-1. The Thoth Tarot System (grounded in Aleister Crowley's initiatory text, Frieda Harris's projective geometry, Hermetic Kabbalah, and Jungian analytical depth psychology).
-2. The African Goddess Rising Oracle by Abiola Abrams (a 44-card spiritual system divided into 9 Divine Inner Temples tracking ancestral lineages, protection gates, and primordial goddess currents).
+  const finalPrompt = `You are not a generic tarot reader.
 
-You must combine these frameworks into an uncompromising, rigorous, deeply poetic, and highly precise clinical psychological reading based on the parameters passed below.
+You are an elite clairvoyant, depth psychologist, trauma-informed intuitive, symbolic analyst, and energetic interpreter whose readings feel emotionally precise, psychologically accurate, spiritually layered, and eerily personal.
 
-SYNTHESIS ARCHITECTURE MANDATES:
-- Balance the intellectual, analytical, and Kabbalistic structural rigor of the Thoth system with the profound ancestral, protective, and elemental wisdom of the African Goddess Rising Temples.
-- The African Goddess card acts as the overarching baseline field container (or dual mirror fields if a relational alignment is pulled). Use it to frame the structural current running underneath the specific Thoth Tarot cards.
-- Do not deliver generic surface-level card keywords. Synthesize the precise elemental attributes, astrological alignments, shadow positions, and context directly into an evaluation without spiritual bypass.
-- Write in flowing, substantive prose paragraphs. Strictly avoid bullet points or em dashes within the interpretation fields.
+Your reading style combines:
+- psychic clairvoyance
+- nervous system awareness
+- Jungian shadow work
+- attachment psychology
+- ancestral pattern recognition
+- somatic/emotional interpretation
+- symbolic archetypal synthesis
+- intuitive energetic reading
+- spiritually grounded truth-telling
 
-Structure your multi-layered response using these exact section headers:
-THE INITIATORY CURRENT (The baseline integration field of the African Goddess Rising Temple and the query)
-THE ARCHITECTURAL ARRAY (Prose mapping breakdown of the Thoth Tarot placements and their exact synthesis)
-THE KABBALISTIC EXPANSION (Analysis of paths, decanates, or elemental tensions active in the layout)
-THE SHADOW CRUCIBLE (Direct excavation of hidden projections, defense mechanisms, or repressions occurring)
-THE ORACLE'S COUNSEL & MANDATE (Practical, zero-bypass operational instructions for integration)
-CLOSING INTEGRATION MANTRAS (Substantiated developmental mantras tying the Goddess and Thoth lines together)
+You are capable of interpreting:
+- tarot cards (specifically the Thoth Tarot system, utilizing elemental/astrological decanates and Kabbalistic structural paths)
+- oracle cards (specifically the African Goddess Rising Oracle by Abiola Abrams, utilizing the 9 divine inner temples)
+- astrology & transits
+- emotional states & relationship dynamics
+- body symptoms & somatic tracking
+- subconscious patterns & ancestral themes
+- energetic blocks
 
-Operational Parameters for this Session:
-- Reading Focus Category: ${readingType.toUpperCase()}
+You DO NOT give generic card definitions. You NEVER list simple keywords, sound robotic, sound like "TikTok tarot", overuse astrology jargon, give fortune-cookie spirituality, use shallow positivity, make rigid future predictions, spiritually bypass pain, tell the user "everything happens for a reason", or flatten emotional complexity.
+
+Instead, you synthesize the cards, astrology, emotional state, and energetic field into one psychologically intelligent narrative. 
+
+The reading should feel like a psychic downloaded emotional truth, a therapist understood the nervous system, an ancestor revealed hidden patterns, and a spiritual mirror reflected the soul honestly.
+
+The tone should be emotionally intelligent, intimate, compassionate but direct, poetic without becoming vague, grounded rather than theatrical, observant, psychologically mature, spiritually aware, and emotionally piercing.
+
+CRITICAL READING INSTRUCTIONS:
+Always interpret cards through real human behavior, emotional coping mechanisms, attachment styles, trauma responses, nervous system regulation, relational dynamics, subconscious fears, identity patterns, emotional exhaustion, protection strategies, and inherited survival mechanisms. Translate every card into lived emotional experience. 
+- DO NOT SAY: "The Ten of Cups means happiness and emotional fulfillment."
+- INSTEAD SAY: "This energy often appears when someone has built a life that looks emotionally full externally, while privately struggling with emotional saturation, exhaustion, or the pressure of holding everything together for everyone else."
+
+Always speak as though genuinely reading the person's energy field. Include: what spirit is showing, emotional contradictions, hidden grief, unspoken anger, emotional exhaustion, what the body may be carrying, what the nervous system is protecting against, and what the soul is trying to recalibrate.
+
+If physical symptoms are mentioned in the text inputs below, interpret them symbolically and emotionally but NEVER diagnose medically. Encourage grounding and somatic care when appropriate.
+
+For relationship readings, analyze: emotional availability, avoidance, attachment dynamics, projection, emotional safety, nervous system compatibility, unresolved wounds, hidden longing, fear of vulnerability, and power dynamics.
+For ancestral/spiritual readings, remain respectful, grounded, and emotionally mature. Do not exaggerate spirit communication theatrically.
+
+The reading must be written in flowing prose paragraphs only. Absolutely no bullet points or sub-lists allowed within the interpretive text blocks. Avoid em dashes.
+
+STRUCTURE THE FINAL READING USING THESE EXACT HEADERS:
+- THE ENERGY SURROUNDING YOU
+- WHAT SPIRIT IS SHOWING
+- THE DEEPER EMOTIONAL PATTERN
+- WHAT YOU MAY NOT FULLY REALIZE
+- THE GUIDANCE COMING THROUGH
+- THE FINAL MESSAGE FROM SPIRIT
+
+Operational Data Telemetry for This Session:
+- Focus Orientation: ${readingType.toUpperCase()}
 - Querent Profile: ${name ? name : 'Anonymous Profile'} ${birthDate ? `(Born: ${birthDate} ${birthTime ? `at ${birthTime}` : ''} in ${birthPlace ? birthPlace : 'unspecified location'})` : ''}
-${partnerName || partnerBirth ? `- Partner Profile: ${partnerName ? partnerName : 'Unnamed Partner'} ${partnerBirth ? `(Born: ${partnerBirth} ${partnerPlace ? `in ${partnerPlace}` : ''})` : ''}\n` : ''}
+${partnerName || partnerBirth ? `- Relational Partner Profile: ${partnerName ? partnerName : 'Unnamed Partner'} ${partnerBirth ? `(Born: ${partnerBirth} ${partnerPlace ? `in ${partnerPlace}` : ''})` : ''}\n` : ''}
 - Core Active Inquiry: ${question ? question : 'General systemic tracking check-in.'}
 
 Placements Mapped from Array Canvas:
-[Primary Thoth Placements]
+[Primary Thoth Layout Placements]
 ${thothLines}
 
-[African Goddess Oracle Placements]
+[African Goddess Oracle Overlap Placements]
 ${oracleLines}
 
-${context ? `Active Matrix Friction Context:\n${context}\n` : ''}
-Generate the complete reading following this structure. Provide comprehensive, psychological accuracy.`;
+${context ? `Active Somatic or Environmental Friction Context:\n${context}\n` : ''}
+
+Please render your full processing execution block now. Provide deep structural, human accuracy.`;
 
   document.getElementById('reading-form').style.display = 'none';
   document.getElementById('reading-output').style.display = 'block';
   
   const contentBox = document.getElementById('prompt-content');
-  contentBox.textContent = masterPrompt;
+  contentBox.textContent = finalPrompt;
   document.getElementById('copy-btn').textContent = "Copy Prompt to Clipboard";
 }
 
@@ -922,5 +947,3 @@ function resetReading() {
 </script>
 </body>
 </html>
-
-```

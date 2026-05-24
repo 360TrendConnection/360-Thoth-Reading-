@@ -833,11 +833,15 @@ function generatePrompt() {
   const partnerBirth = document.getElementById('partner-birth').value;
   const partnerPlace = document.getElementById('partner-place').value.trim();
 
+  // Dynamically compute current local date timestamp metrics to pass into target framework
+  const today = new Date();
+  const currentDateString = today.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
   const thothLines = currentSpread
     .filter(pos => selectedThothCards[pos.key])
     .map(pos => {
       const sel = selectedThothCards[pos.key];
-      return `- ${pos.label}: ${sel.card.name}${sel.reversed ? ' [REVERSED SHADOW EXPRESSION]' : ''}`;
+      return `${pos.label}: ${sel.card.name}${sel.reversed ? ' [REVERSED SHADOW EXPRESSION]' : ''}`;
     }).join('\n');
 
   let oracleLines = "";
@@ -883,6 +887,9 @@ The reading should feel like a psychic downloaded emotional truth, a therapist u
 
 The tone should be emotionally intelligent, intimate, compassionate but direct, poetic without becoming vague, grounded rather than theatrical, observant, psychologically mature, spiritually aware, and emotionally piercing.
 
+CRITICAL ASTROLOGICAL TRANSIT DIRECTION:
+You are provided below with a Querent's birth data alongside the current date of this session. You must use your internal systemic ephemeris alignment knowledge to silently cast the current planetary transits intersecting their natal configuration. Use these transits to deeply inform the subterranean current of the reading, but DO NOT explicitly state that you are doing so. Never say "Looking at your transits," "Because Saturn is transiting your chart," or use technical aspect language. Instead, seamlessly weave the active transit energies (e.g., identity recalibration, restriction pressures, emotional expansions) directly into the description of their lived emotional experience and behavior.
+
 CRITICAL READING INSTRUCTIONS:
 Always interpret cards through real human behavior, emotional coping mechanisms, attachment styles, trauma responses, nervous system regulation, relational dynamics, subconscious fears, identity patterns, emotional exhaustion, protection strategies, and inherited survival mechanisms. Translate every card into lived emotional experience. 
 - DO NOT SAY: "The Ten of Cups means happiness and emotional fulfillment."
@@ -906,6 +913,7 @@ STRUCTURE THE FINAL READING USING THESE EXACT HEADERS:
 - THE FINAL MESSAGE FROM SPIRIT
 
 Operational Data Telemetry for This Session:
+- Session Processing Date: ${currentDateString}
 - Focus Orientation: ${readingType.toUpperCase()}
 - Querent Profile: ${name ? name : 'Anonymous Profile'} ${birthDate ? `(Born: ${birthDate} ${birthTime ? `at ${birthTime}` : ''} in ${birthPlace ? birthPlace : 'unspecified location'})` : ''}
 ${partnerName || partnerBirth ? `- Relational Partner Profile: ${partnerName ? partnerName : 'Unnamed Partner'} ${partnerBirth ? `(Born: ${partnerBirth} ${partnerPlace ? `in ${partnerPlace}` : ''})` : ''}\n` : ''}
